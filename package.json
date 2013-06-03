@@ -1,0 +1,16 @@
+{
+	"name": "ip-list-importer",
+	"version": "0.1.0",
+	"description": "Reads a CSV list into a MongoDB table.",
+	"homepage": "http://www.raket.nu/",
+	"author": {
+		"name": "Marcus Dalgren",
+		"email": "marcus@raket.nu"
+	},
+	"private": true,
+	"dependencies": {
+		"mongoose":           "3.5.x",
+		"csv":                "0.3.x",
+		"request":            "2.21.0"
+	}
+}
