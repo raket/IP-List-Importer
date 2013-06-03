@@ -10,19 +10,27 @@ var request = require('request'),
 	ipListImporter,
 	countryList;
 
-var schema = new mongoose.Schema({
-	rangeStart:  Number,
-	rangeEnd:    Number,
-	countryCode: String,
-	countryName: String
-});
-schema.index({ rangeStart: 1, rangeEnd: -1 });
 
-countryList = mongoose.model("Ip2CountryList", schema);
 
 ipListImporter = {
-	countryList: countryList,
+	countryList: null,
+	init: function() {
+		var countryList;
+		var schema = new mongoose.Schema({
+			rangeStart:  Number,
+			rangeEnd:    Number,
+			countryCode: String,
+			countryName: String
+		});
+		schema.index({ rangeStart: 1, rangeEnd: -1 });
+
+		countryList = mongoose.model("Ip2CountryList", schema);
+		this.countryList = countryList;
+	},
 	importList: function(pathOrRequest) {
+		if (!this.countryList)
+			this.init();
+
 		this.truncateList().on("complete", function () {
 			var count = 0;
 			csv()

@@ -3,7 +3,8 @@
 	"version": "0.1.0",
 	"description": "Reads a CSV list into a MongoDB table.",
 	"homepage": "http://www.raket.nu/",
-	"author": {
+	"author": "Marcus Dalgren <marcus@raket.nu>",
+	"contributors": {
 		"name": "Marcus Dalgren",
 		"email": "marcus@raket.nu"
 	},
@@ -12,5 +13,9 @@
 		"mongoose":           "3.5.x",
 		"csv":                "0.3.x",
 		"request":            "2.21.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/raket/IP-List-Importer.git"
 	}
 }
