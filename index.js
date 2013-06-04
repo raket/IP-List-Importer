@@ -63,6 +63,7 @@ ipListImporter = {
 		return this.countryList.find().remove().exec();
 	},
 	resolveIp:    function (myIp) {
+		myIp = dot2num(myIp);
 		return this.countryList.findOne({
 			rangeStart: {$lte: myIp},
 			rangeEnd:   {$gte: myIp}
