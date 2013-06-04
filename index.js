@@ -8,33 +8,34 @@ var request = require('request'),
 	fs = require('fs'),
 	mongoose = require('mongoose'),
 	ipListImporter,
-	countryList;
+	countryList,
+	schema;
 
-
+schema = new mongoose.Schema({
+	rangeStart:  Number,
+	rangeEnd:    Number,
+	countryCode: String,
+	countryName: String
+});
+schema.index({ rangeStart: 1, rangeEnd: -1 });
+countryList = mongoose.model("Ip2CountryList", schema);
 
 ipListImporter = {
-	countryList: null,
-	init: function() {
-		var countryList;
-		var schema = new mongoose.Schema({
-			rangeStart:  Number,
-			rangeEnd:    Number,
-			countryCode: String,
-			countryName: String
-		});
-		schema.index({ rangeStart: 1, rangeEnd: -1 });
-
-		countryList = mongoose.model("Ip2CountryList", schema);
-		this.countryList = countryList;
+	countryList:  countryList,
+	init:         function () {
 	},
-	importList: function(pathOrRequest) {
-		if (!this.countryList)
-			this.init();
-
+	importList:   function (pathOrRequest) {
+		var csvPath;
+		if (pathOrRequest) {
+			csvPath = pathOrRequest
+		}
+		else {
+			csvPath = path.resolve(__dirname, '/files/GeoIP-108.csv');
+		}
 		this.truncateList().on("complete", function () {
 			var count = 0;
 			csv()
-				.from.stream(path.resolve(__dirname, '/files/GeoIP-108.csv'))
+				.from.stream(csvPath)
 				.on('record', function (row, index) {
 					//console.log(JSON.stringify(row));
 					var countryRow = new countryList({
@@ -48,7 +49,7 @@ ipListImporter = {
 							console.log("Row error");
 						else {
 							count++;
-							console.log("Row saved "+count);
+							console.log("Row saved " + count);
 						}
 					});
 				})
@@ -58,8 +59,14 @@ ipListImporter = {
 				});
 		});
 	},
-	truncateList: function() {
-		return countryList.find().remove().exec();
+	truncateList: function () {
+		return this.countryList.find().remove().exec();
+	},
+	resolveIp:    function (myIp) {
+		return this.countryList.findOne({
+			rangeStart: {$lte: myIp},
+			rangeEnd:   {$gte: myIp}
+		}).exec();
 	}
 };
 module.exports = ipListImporter;
